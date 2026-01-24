@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(adb uninstall:*)",
+      "Bash(npx expo run:android:*)",
+      "Bash(taskkill:*)",
+      "Bash(adb shell:*)",
+      "Bash(npm install:*)"
+    ]
+  }
+}
