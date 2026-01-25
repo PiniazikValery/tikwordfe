@@ -227,7 +227,15 @@ export default function DictionaryScreen() {
             <Text style={styles.transcriptionText}>{newTranscription}</Text>
           )}
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleAddWord}>
+        <TouchableOpacity
+          style={[
+            styles.addButton,
+            (isTranslating || !newWord.trim() || !newTranslation.trim()) &&
+              styles.addButtonDisabled,
+          ]}
+          onPress={handleAddWord}
+          disabled={isTranslating || !newWord.trim() || !newTranslation.trim()}
+        >
           <Text style={styles.addButtonText}>{t("dictionary.addWord")}</Text>
         </TouchableOpacity>
       </View>
@@ -295,6 +303,9 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 8,
     alignItems: "center",
+  },
+  addButtonDisabled: {
+    opacity: 0.5,
   },
   addButtonText: {
     color: "#fff",
