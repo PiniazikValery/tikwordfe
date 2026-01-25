@@ -19,6 +19,7 @@ import { queueWordForSearch } from "../api/youtube";
 import { useLanguage } from "../contexts/LanguageContext";
 import { deleteWord, generateId, getWords, saveWord } from "../storage/words";
 import { Word } from "../types";
+import wordExists from "word-exists";
 
 export default function DictionaryScreen() {
   const { t } = useTranslation();
@@ -28,6 +29,7 @@ export default function DictionaryScreen() {
   const [newTranslation, setNewTranslation] = useState("");
   const [newTranscription, setNewTranscription] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
+  const [isWordValid, setIsWordValid] = useState(false);
 
   // Reload words whenever the screen comes into focus or language changes
   useFocusEffect(
@@ -43,8 +45,12 @@ export default function DictionaryScreen() {
     if (!newWord.trim() || !languageConfig) {
       setNewTranslation("");
       setNewTranscription("");
+      setIsWordValid(false);
       return;
     }
+
+    // Immediately invalidate when typing starts - prevents race condition
+    setIsWordValid(false);
 
     const timeoutId = setTimeout(async () => {
       setIsTranslating(true);
@@ -58,8 +64,12 @@ export default function DictionaryScreen() {
         ]);
         setNewTranslation(translation);
         setNewTranscription(transcription);
+        // Check if the word exists in English dictionary
+        const exists = wordExists(newWord.trim().toLowerCase());
+        setIsWordValid(exists);
       } catch (error) {
         // Keep empty, user can type manually
+        setIsWordValid(false);
       } finally {
         setIsTranslating(false);
       }
@@ -111,6 +121,7 @@ export default function DictionaryScreen() {
       setNewWord("");
       setNewTranslation("");
       setNewTranscription("");
+      setIsWordValid(false);
     } catch (error) {
       Alert.alert(
         t("dictionary.alertErrorTitle"),
@@ -230,11 +241,19 @@ export default function DictionaryScreen() {
         <TouchableOpacity
           style={[
             styles.addButton,
-            (isTranslating || !newWord.trim() || !newTranslation.trim()) &&
+            (isTranslating ||
+              !newWord.trim() ||
+              !newTranslation.trim() ||
+              !isWordValid) &&
               styles.addButtonDisabled,
           ]}
           onPress={handleAddWord}
-          disabled={isTranslating || !newWord.trim() || !newTranslation.trim()}
+          disabled={
+            isTranslating ||
+            !newWord.trim() ||
+            !newTranslation.trim() ||
+            !isWordValid
+          }
         >
           <Text style={styles.addButtonText}>{t("dictionary.addWord")}</Text>
         </TouchableOpacity>
@@ -314,6 +333,9 @@ const styles = StyleSheet.create({
   },
   list: {
     flex: 1,
+  },
+  listContent: {
+    paddingBottom: 20,
   },
   wordItem: {
     flexDirection: "row",
