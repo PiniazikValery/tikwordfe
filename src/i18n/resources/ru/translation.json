@@ -34,6 +34,8 @@
     "addWord": "Добавить слово",
     "placeholderWord": "Английское слово",
     "placeholderTranslation": "Перевод (авто)",
+    "placeholderNativeWord": "Слово на вашем языке",
+    "placeholderEnglishTranslation": "Английский (авто)",
     "emptyState": "Пока нет слов. Добавьте ваше первое слово!",
     "alertErrorTitle": "Ошибка",
     "alertErrorBothFields": "Пожалуйста, введите и слово, и перевод",

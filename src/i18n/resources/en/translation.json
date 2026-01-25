@@ -34,6 +34,8 @@
     "addWord": "Add Word",
     "placeholderWord": "English word",
     "placeholderTranslation": "Translation (auto)",
+    "placeholderNativeWord": "Word in your language",
+    "placeholderEnglishTranslation": "English (auto)",
     "emptyState": "No words yet. Add your first word!",
     "alertErrorTitle": "Error",
     "alertErrorBothFields": "Please enter both word and translation",

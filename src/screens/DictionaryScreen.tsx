@@ -1,3 +1,4 @@
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -13,13 +14,31 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
+import wordExists from "word-exists";
 import { getPhoneticTranscription } from "../api/transcription";
 import { translateToLanguage } from "../api/translate";
 import { queueWordForSearch } from "../api/youtube";
 import { useLanguage } from "../contexts/LanguageContext";
 import { deleteWord, generateId, getWords, saveWord } from "../storage/words";
 import { Word } from "../types";
-import wordExists from "word-exists";
+
+// Check if all words in a phrase exist in the dictionary
+function validateEnglishPhrase(phrase: string): boolean {
+  // Split by spaces and common separators, filter empty strings
+  const words = phrase
+    .toLowerCase()
+    .split(/[\s,;.!?]+/)
+    .filter((w) => w.length > 0);
+
+  if (words.length === 0) return false;
+
+  // Check each word (handle contractions by removing apostrophe suffixes)
+  return words.every((word) => {
+    // Remove apostrophe and anything after (e.g., "what's" -> "what")
+    const baseWord = word.replace(/'.*$/, "");
+    return baseWord.length > 0 && wordExists(baseWord);
+  });
+}
 
 export default function DictionaryScreen() {
   const { t } = useTranslation();
@@ -30,6 +49,7 @@ export default function DictionaryScreen() {
   const [newTranscription, setNewTranscription] = useState("");
   const [isTranslating, setIsTranslating] = useState(false);
   const [isWordValid, setIsWordValid] = useState(false);
+  const [isReversed, setIsReversed] = useState(false); // false = EN→Native, true = Native→EN
 
   // Reload words whenever the screen comes into focus or language changes
   useFocusEffect(
@@ -55,18 +75,37 @@ export default function DictionaryScreen() {
     const timeoutId = setTimeout(async () => {
       setIsTranslating(true);
       try {
-        const [translation, transcription] = await Promise.all([
-          translateToLanguage(
+        if (isReversed) {
+          // Native → English mode: translate from native language to English
+          const translation = await translateToLanguage(
             newWord.trim(),
+            "en",
             languageConfig.googleTranslateCode,
-          ),
-          getPhoneticTranscription(newWord.trim()).catch(() => ""),
-        ]);
-        setNewTranslation(translation);
-        setNewTranscription(transcription);
-        // Check if the word exists in English dictionary
-        const exists = wordExists(newWord.trim().toLowerCase());
-        setIsWordValid(exists);
+          );
+          setNewTranslation(translation);
+          // Get transcription for the English translation
+          const transcription = await getPhoneticTranscription(
+            translation,
+          ).catch(() => "");
+          setNewTranscription(transcription);
+          // Validate the English translation
+          const exists = validateEnglishPhrase(translation);
+          setIsWordValid(exists);
+        } else {
+          // English → Native mode (original behavior)
+          const [translation, transcription] = await Promise.all([
+            translateToLanguage(
+              newWord.trim(),
+              languageConfig.googleTranslateCode,
+            ),
+            getPhoneticTranscription(newWord.trim()).catch(() => ""),
+          ]);
+          setNewTranslation(translation);
+          setNewTranscription(transcription);
+          // Check if the word exists in English dictionary
+          const exists = validateEnglishPhrase(newWord.trim());
+          setIsWordValid(exists);
+        }
       } catch (error) {
         // Keep empty, user can type manually
         setIsWordValid(false);
@@ -76,12 +115,20 @@ export default function DictionaryScreen() {
     }, 500); // Wait 500ms after user stops typing
 
     return () => clearTimeout(timeoutId);
-  }, [newWord, languageConfig]);
+  }, [newWord, languageConfig, isReversed]);
 
   async function loadWords() {
     if (!languageConfig) return;
     const loadedWords = await getWords(languageConfig.code);
     setWords(loadedWords);
+  }
+
+  function handleSwapInputMode() {
+    setIsReversed(!isReversed);
+    setNewWord("");
+    setNewTranslation("");
+    setNewTranscription("");
+    setIsWordValid(false);
   }
 
   async function handleAddWord() {
@@ -101,10 +148,17 @@ export default function DictionaryScreen() {
       return;
     }
 
+    // In reversed mode: newWord is native, newTranslation is English
+    // We always save: word = English, translation = Native
+    const englishWord = isReversed ? newTranslation.trim() : newWord.trim();
+    const nativeTranslation = isReversed
+      ? newWord.trim()
+      : newTranslation.trim();
+
     const word: Word = {
       id: generateId(),
-      word: newWord.trim(),
-      translation: newTranslation.trim(),
+      word: englishWord,
+      translation: nativeTranslation,
       transcription: newTranscription || undefined,
       rememberPercent: 0,
       correctCount: 0,
@@ -214,16 +268,32 @@ export default function DictionaryScreen() {
 
       <View style={styles.inputContainer}>
         <TextInput
-          style={styles.input}
-          placeholder={t("dictionary.placeholderWord")}
+          style={[styles.input, styles.firstInput]}
+          placeholder={
+            isReversed
+              ? t("dictionary.placeholderNativeWord")
+              : t("dictionary.placeholderWord")
+          }
           value={newWord}
           onChangeText={setNewWord}
           placeholderTextColor="#999"
         />
+        <View style={styles.swapButtonAnchor}>
+          <TouchableOpacity
+            style={styles.swapButton}
+            onPress={handleSwapInputMode}
+          >
+            <Ionicons name="swap-vertical" size={20} color="#007AFF" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.translationInputContainer}>
           <TextInput
             style={[styles.input, styles.translationInput]}
-            placeholder={t("dictionary.placeholderTranslation")}
+            placeholder={
+              isReversed
+                ? t("dictionary.placeholderEnglishTranslation")
+                : t("dictionary.placeholderTranslation")
+            }
             value={newTranslation}
             editable={false}
             placeholderTextColor="#999"
@@ -295,8 +365,31 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 14,
     fontSize: 16,
-    marginBottom: 10,
     color: "#000",
+  },
+  firstInput: {
+    marginBottom: 0,
+  },
+  swapButtonAnchor: {
+    position: "relative",
+    width: 10,
+    height: 10,
+    alignSelf: "flex-end",
+    marginRight: 8,
+    zIndex: 10,
+  },
+  swapButton: {
+    position: "absolute",
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#ddd",
+    alignItems: "center",
+    justifyContent: "center",
+    top: "50%",
+    transform: [{ translateY: "-50%" }, { translateX: "-50%" }],
   },
   translationInputContainer: {
     position: "relative",
@@ -318,6 +411,7 @@ const styles = StyleSheet.create({
     paddingLeft: 4,
   },
   addButton: {
+    marginTop: 10,
     backgroundColor: "#007AFF",
     paddingVertical: 14,
     borderRadius: 8,

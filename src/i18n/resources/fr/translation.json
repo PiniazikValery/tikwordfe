@@ -34,6 +34,8 @@
     "addWord": "Ajouter un mot",
     "placeholderWord": "Mot anglais",
     "placeholderTranslation": "Traduction (auto)",
+    "placeholderNativeWord": "Mot dans votre langue",
+    "placeholderEnglishTranslation": "Anglais (auto)",
     "emptyState": "Aucun mot pour le moment. Ajoutez votre premier mot !",
     "alertErrorTitle": "Erreur",
     "alertErrorBothFields": "Veuillez saisir le mot et sa traduction",

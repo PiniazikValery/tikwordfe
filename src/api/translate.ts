@@ -1,10 +1,11 @@
 // Using Google Translate unofficial API (free, no key required)
 export async function translateToLanguage(
   text: string,
-  targetLanguageCode: string
+  targetLanguageCode: string,
+  sourceLanguageCode: string = "en"
 ): Promise<string> {
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=${targetLanguageCode}&dt=t&q=${encodeURIComponent(text)}`;
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLanguageCode}&tl=${targetLanguageCode}&dt=t&q=${encodeURIComponent(text)}`;
 
     const response = await fetch(url);
 

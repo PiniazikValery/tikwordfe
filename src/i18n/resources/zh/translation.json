@@ -34,6 +34,8 @@
     "addWord": "添加单词",
     "placeholderWord": "英语单词",
     "placeholderTranslation": "翻译（自动）",
+    "placeholderNativeWord": "您语言的单词",
+    "placeholderEnglishTranslation": "英语（自动）",
     "emptyState": "还没有单词。添加您的第一个单词！",
     "alertErrorTitle": "错误",
     "alertErrorBothFields": "请输入单词和翻译",

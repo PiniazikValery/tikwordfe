@@ -34,6 +34,8 @@
     "addWord": "Wort hinzufügen",
     "placeholderWord": "Englisches Wort",
     "placeholderTranslation": "Übersetzung (automatisch)",
+    "placeholderNativeWord": "Wort in Ihrer Sprache",
+    "placeholderEnglishTranslation": "Englisch (automatisch)",
     "emptyState": "Noch keine Wörter. Fügen Sie Ihr erstes Wort hinzu!",
     "alertErrorTitle": "Fehler",
     "alertErrorBothFields": "Bitte geben Sie sowohl Wort als auch Übersetzung ein",
