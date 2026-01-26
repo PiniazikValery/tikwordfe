@@ -7,6 +7,21 @@ export interface Word {
   correctCount: number; // total correct answers
   incorrectCount: number; // total incorrect answers
   lastAnsweredAt?: number; // timestamp of last answer (for spaced repetition)
+  libraryIds?: string[]; // IDs of libraries this word belongs to
+}
+
+// Library types
+export type LibraryDifficulty = "beginner" | "intermediate" | "advanced";
+
+export interface Library {
+  id: string;
+  name: string;
+  difficulty: LibraryDifficulty;
+  description?: string;
+  color?: string; // hex color, e.g., "#FF5733"
+  icon?: string; // Ionicons name, e.g., "book"
+  createdAt: number;
+  updatedAt: number;
 }
 
 export interface Subtitle {

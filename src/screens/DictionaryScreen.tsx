@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
@@ -18,8 +18,18 @@ import wordExists from "word-exists";
 import { getPhoneticTranscription } from "../api/transcription";
 import { translateToLanguage } from "../api/translate";
 import { queueWordForSearch } from "../api/youtube";
+import LibraryManagementModal from "../components/LibraryManagementModal";
+import LibraryPicker from "../components/LibraryPicker";
+import LibrarySelectModal from "../components/LibrarySelectModal";
 import { useLanguage } from "../contexts/LanguageContext";
-import { deleteWord, generateId, getWords, saveWord } from "../storage/words";
+import { useLibrary } from "../contexts/LibraryContext";
+import {
+  deleteWord,
+  generateId,
+  getWords,
+  saveWord,
+  updateWord,
+} from "../storage/words";
 import { Word } from "../types";
 
 // Check if all words in a phrase exist in the dictionary
@@ -43,6 +53,7 @@ function validateEnglishPhrase(phrase: string): boolean {
 export default function DictionaryScreen() {
   const { t } = useTranslation();
   const { languageConfig } = useLanguage();
+  const { libraries, selectedLibraryId, selectLibrary } = useLibrary();
   const [words, setWords] = useState<Word[]>([]);
   const [newWord, setNewWord] = useState("");
   const [newTranslation, setNewTranslation] = useState("");
@@ -50,14 +61,40 @@ export default function DictionaryScreen() {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isWordValid, setIsWordValid] = useState(false);
   const [isReversed, setIsReversed] = useState(false); // false = EN→Native, true = Native→EN
+  const [showLibraryManagement, setShowLibraryManagement] = useState(false);
+  const [showLibrarySelect, setShowLibrarySelect] = useState(false);
+  const [editingWord, setEditingWord] = useState<Word | null>(null);
+
+  // Filter words by selected library
+  const filteredWords = useMemo(() => {
+    if (!selectedLibraryId) return words;
+    return words.filter(
+      (w) => w.libraryIds && w.libraryIds.includes(selectedLibraryId),
+    );
+  }, [words, selectedLibraryId]);
+
+  // Calculate word counts per library
+  const wordCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    libraries.forEach((lib) => {
+      counts[lib.id] = words.filter(
+        (w) => w.libraryIds && w.libraryIds.includes(lib.id),
+      ).length;
+    });
+    return counts;
+  }, [words, libraries]);
+
+  const loadWords = useCallback(async () => {
+    if (!languageConfig) return;
+    const loadedWords = await getWords(languageConfig.code);
+    setWords(loadedWords);
+  }, [languageConfig]);
 
   // Reload words whenever the screen comes into focus or language changes
   useFocusEffect(
     useCallback(() => {
-      if (languageConfig) {
-        loadWords();
-      }
-    }, [languageConfig]),
+      loadWords();
+    }, [loadWords]),
   );
 
   // Auto-translate when user stops typing
@@ -117,12 +154,6 @@ export default function DictionaryScreen() {
     return () => clearTimeout(timeoutId);
   }, [newWord, languageConfig, isReversed]);
 
-  async function loadWords() {
-    if (!languageConfig) return;
-    const loadedWords = await getWords(languageConfig.code);
-    setWords(loadedWords);
-  }
-
   function handleSwapInputMode() {
     setIsReversed(!isReversed);
     setNewWord("");
@@ -131,7 +162,7 @@ export default function DictionaryScreen() {
     setIsWordValid(false);
   }
 
-  async function handleAddWord() {
+  function handleAddWord() {
     if (!newWord.trim() || !newTranslation.trim()) {
       Alert.alert(
         t("dictionary.alertErrorTitle"),
@@ -148,6 +179,27 @@ export default function DictionaryScreen() {
       return;
     }
 
+    // Check for duplicate words (case-insensitive)
+    const englishWord = isReversed ? newTranslation.trim() : newWord.trim();
+    const isDuplicate = words.some(
+      (w) => w.word.toLowerCase() === englishWord.toLowerCase(),
+    );
+
+    if (isDuplicate) {
+      Alert.alert(
+        t("dictionary.alertErrorTitle"),
+        t("dictionary.alertErrorDuplicate"),
+      );
+      return;
+    }
+
+    // Always show library selection modal
+    setShowLibrarySelect(true);
+  }
+
+  async function saveWordToStorage(libraryIds: string[]) {
+    if (!languageConfig) return;
+
     // In reversed mode: newWord is native, newTranslation is English
     // We always save: word = English, translation = Native
     const englishWord = isReversed ? newTranslation.trim() : newWord.trim();
@@ -163,6 +215,7 @@ export default function DictionaryScreen() {
       rememberPercent: 0,
       correctCount: 0,
       incorrectCount: 0,
+      libraryIds: libraryIds.length > 0 ? libraryIds : undefined,
     };
 
     try {
@@ -198,6 +251,31 @@ export default function DictionaryScreen() {
     }
   }
 
+  function handleWordPress(word: Word) {
+    setEditingWord(word);
+    setShowLibrarySelect(true);
+  }
+
+  async function handleUpdateWordLibraries(libraryIds: string[]) {
+    if (!languageConfig || !editingWord) return;
+
+    const updatedWord: Word = {
+      ...editingWord,
+      libraryIds: libraryIds.length > 0 ? libraryIds : undefined,
+    };
+
+    try {
+      await updateWord(updatedWord, languageConfig.code);
+      setWords(words.map((w) => (w.id === editingWord.id ? updatedWord : w)));
+      setEditingWord(null);
+    } catch (error) {
+      Alert.alert(
+        t("dictionary.alertErrorTitle"),
+        t("dictionary.alertErrorSave"),
+      );
+    }
+  }
+
   function renderWordItem({ item }: { item: Word }) {
     const progress = item.rememberPercent || 0;
     const progressColor =
@@ -210,8 +288,34 @@ export default function DictionaryScreen() {
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference - (progress / 100) * circumference;
 
+    // Get library colors for this word
+    const wordLibraries = libraries.filter(
+      (lib) => item.libraryIds && item.libraryIds.includes(lib.id),
+    );
+
     return (
-      <View style={styles.wordItem}>
+      <TouchableOpacity
+        style={styles.wordItem}
+        onPress={() => handleWordPress(item)}
+        activeOpacity={0.7}
+      >
+        {wordLibraries.length > 0 ? (
+          <View style={styles.libraryIndicators}>
+            {wordLibraries.slice(0, 3).map((lib) => (
+              <View
+                key={lib.id}
+                style={[
+                  styles.libraryDot,
+                  { backgroundColor: lib.color || "#007AFF" },
+                ]}
+              />
+            ))}
+          </View>
+        ) : (
+          <View style={styles.libraryIndicators}>
+            <Ionicons name="add-circle-outline" size={16} color="#ccc" />
+          </View>
+        )}
         <View style={styles.wordContent}>
           <Text style={styles.wordText}>{item.word}</Text>
           {item.transcription && (
@@ -258,13 +362,30 @@ export default function DictionaryScreen() {
         >
           <Text style={styles.deleteButtonText}>×</Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
     );
   }
 
   return (
     <SafeAreaView style={styles.container} edges={["top"]}>
       <Text style={styles.title}>{t("dictionary.title")}</Text>
+
+      {libraries.length > 0 ? (
+        <LibraryPicker
+          libraries={libraries}
+          selectedLibraryId={selectedLibraryId}
+          onSelectLibrary={selectLibrary}
+          onManagePress={() => setShowLibraryManagement(true)}
+        />
+      ) : (
+        <TouchableOpacity
+          style={styles.createLibraryButton}
+          onPress={() => setShowLibraryManagement(true)}
+        >
+          <Ionicons name="add-circle-outline" size={18} color="#007AFF" />
+          <Text style={styles.createLibraryText}>{t("libraries.create")}</Text>
+        </TouchableOpacity>
+      )}
 
       <View style={styles.inputContainer}>
         <TextInput
@@ -287,25 +408,35 @@ export default function DictionaryScreen() {
           </TouchableOpacity>
         </View>
         <View style={styles.translationInputContainer}>
-          <TextInput
-            style={[styles.input, styles.translationInput]}
-            placeholder={
-              isReversed
-                ? t("dictionary.placeholderEnglishTranslation")
-                : t("dictionary.placeholderTranslation")
-            }
-            value={newTranslation}
-            editable={false}
-            placeholderTextColor="#999"
-          />
+          <View
+            style={[
+              styles.input,
+              styles.translationInput,
+              styles.translationDisplay,
+            ]}
+          >
+            <Text style={styles.translationDisplayText}>
+              {newTranslation}
+              {newTranscription ? (
+                <Text style={styles.transcriptionInline}>
+                  {" "}
+                  [{newTranscription}]
+                </Text>
+              ) : null}
+            </Text>
+            {!newTranslation && (
+              <Text style={styles.translationPlaceholder}>
+                {isReversed
+                  ? t("dictionary.placeholderEnglishTranslation")
+                  : t("dictionary.placeholderTranslation")}
+              </Text>
+            )}
+          </View>
           {isTranslating && (
             <ActivityIndicator
               style={styles.translationLoader}
               color="#007AFF"
             />
-          )}
-          {newTranscription && (
-            <Text style={styles.transcriptionText}>{newTranscription}</Text>
           )}
         </View>
         <TouchableOpacity
@@ -330,7 +461,7 @@ export default function DictionaryScreen() {
       </View>
 
       <FlatList
-        data={words}
+        data={filteredWords}
         keyExtractor={(item) => item.id}
         renderItem={renderWordItem}
         style={styles.list}
@@ -338,6 +469,25 @@ export default function DictionaryScreen() {
         ListEmptyComponent={
           <Text style={styles.emptyText}>{t("dictionary.emptyState")}</Text>
         }
+      />
+
+      <LibraryManagementModal
+        visible={showLibraryManagement}
+        onClose={() => setShowLibraryManagement(false)}
+        wordCounts={wordCounts}
+        words={words}
+        onWordsUpdated={loadWords}
+      />
+
+      <LibrarySelectModal
+        visible={showLibrarySelect}
+        libraries={libraries}
+        selectedIds={editingWord?.libraryIds || []}
+        onSave={editingWord ? handleUpdateWordLibraries : saveWordToStorage}
+        onClose={() => {
+          setShowLibrarySelect(false);
+          setEditingWord(null);
+        }}
       />
     </SafeAreaView>
   );
@@ -396,6 +546,22 @@ const styles = StyleSheet.create({
   },
   translationInput: {
     paddingRight: 40,
+  },
+  translationDisplay: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  translationDisplayText: {
+    fontSize: 16,
+    color: "#000",
+  },
+  transcriptionInline: {
+    color: "#007AFF",
+    fontStyle: "italic",
+  },
+  translationPlaceholder: {
+    fontSize: 16,
+    color: "#999",
   },
   translationLoader: {
     position: "absolute",
@@ -494,5 +660,32 @@ const styles = StyleSheet.create({
     color: "#999",
     fontSize: 16,
     marginTop: 40,
+  },
+  libraryIndicators: {
+    flexDirection: "column",
+    gap: 4,
+    marginRight: 10,
+  },
+  libraryDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  createLibraryButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: "#e3f2fd",
+    borderRadius: 20,
+    marginBottom: 12,
+    gap: 6,
+    alignSelf: "flex-start",
+  },
+  createLibraryText: {
+    fontSize: 14,
+    color: "#007AFF",
+    fontWeight: "500",
   },
 });

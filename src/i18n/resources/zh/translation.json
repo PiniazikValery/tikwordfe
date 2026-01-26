@@ -41,7 +41,8 @@
     "alertErrorBothFields": "请输入单词和翻译",
     "alertErrorNoLanguage": "请先选择语言",
     "alertErrorSave": "保存单词失败",
-    "alertErrorDelete": "删除单词失败"
+    "alertErrorDelete": "删除单词失败",
+    "alertErrorDuplicate": "这个单词已经在您的词典中了"
   },
   "training": {
     "title": "训练",
@@ -155,5 +156,40 @@
     "remaining": "剩余 {{remaining}}/{{total}} 次免费请求",
     "limitReached": "已达上限",
     "unlimited": "无限"
+  },
+  "libraries": {
+    "title": "词库",
+    "allWords": "所有单词",
+    "create": "创建词库",
+    "edit": "编辑词库",
+    "delete": "删除",
+    "deleteConfirmTitle": "删除词库？",
+    "deleteConfirmMessage": "词库将被删除，但所有单词将保留。单词将不再与此词库关联。",
+    "name": "名称",
+    "namePlaceholder": "输入词库名称",
+    "difficulty": "难度",
+    "beginner": "初级",
+    "intermediate": "中级",
+    "advanced": "高级",
+    "description": "描述",
+    "descriptionPlaceholder": "可选描述",
+    "color": "颜色",
+    "icon": "图标",
+    "words": "单词",
+    "searchWords": "搜索单词...",
+    "noWordsFound": "未找到单词",
+    "save": "保存",
+    "cancel": "取消",
+    "wordCount": "{{count}} 个单词",
+    "wordCount_plural": "{{count}} 个单词",
+    "emptyState": "还没有词库。创建您的第一个词库！",
+    "selectLibraries": "选择词库",
+    "noLibrary": "无词库",
+    "manage": "管理词库",
+    "saveWithoutLibrary": "不添加到词库直接保存",
+    "saveToSelected": "保存到选中的词库",
+    "alertNameRequired": "请输入词库名称",
+    "alertSaveError": "保存词库失败",
+    "alertDeleteError": "删除词库失败"
   }
 }

@@ -41,7 +41,8 @@
     "alertErrorBothFields": "Bitte geben Sie sowohl Wort als auch Übersetzung ein",
     "alertErrorNoLanguage": "Bitte wählen Sie zuerst eine Sprache",
     "alertErrorSave": "Wort konnte nicht gespeichert werden",
-    "alertErrorDelete": "Wort konnte nicht gelöscht werden"
+    "alertErrorDelete": "Wort konnte nicht gelöscht werden",
+    "alertErrorDuplicate": "Dieses Wort existiert bereits in Ihrem Wörterbuch"
   },
   "training": {
     "title": "Training",
@@ -155,5 +156,40 @@
     "remaining": "{{remaining}} von {{total}} kostenlosen Anfragen übrig",
     "limitReached": "Limit erreicht",
     "unlimited": "Unbegrenzt"
+  },
+  "libraries": {
+    "title": "Bibliotheken",
+    "allWords": "Alle Wörter",
+    "create": "Bibliothek erstellen",
+    "edit": "Bibliothek bearbeiten",
+    "delete": "Löschen",
+    "deleteConfirmTitle": "Bibliothek löschen?",
+    "deleteConfirmMessage": "Die Bibliothek wird gelöscht, aber alle Wörter bleiben erhalten. Wörter werden nicht mehr mit dieser Bibliothek verknüpft sein.",
+    "name": "Name",
+    "namePlaceholder": "Bibliotheksname eingeben",
+    "difficulty": "Schwierigkeit",
+    "beginner": "Anfänger",
+    "intermediate": "Mittelstufe",
+    "advanced": "Fortgeschritten",
+    "description": "Beschreibung",
+    "descriptionPlaceholder": "Optionale Beschreibung",
+    "color": "Farbe",
+    "icon": "Symbol",
+    "words": "Wörter",
+    "searchWords": "Wörter suchen...",
+    "noWordsFound": "Keine Wörter gefunden",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "wordCount": "{{count}} Wort",
+    "wordCount_plural": "{{count}} Wörter",
+    "emptyState": "Noch keine Bibliotheken. Erstelle deine erste Bibliothek!",
+    "selectLibraries": "Bibliotheken auswählen",
+    "noLibrary": "Keine Bibliothek",
+    "manage": "Bibliotheken verwalten",
+    "saveWithoutLibrary": "Ohne Bibliothek speichern",
+    "saveToSelected": "In ausgewählte Bibliotheken speichern",
+    "alertNameRequired": "Bitte gib einen Bibliotheksnamen ein",
+    "alertSaveError": "Bibliothek konnte nicht gespeichert werden",
+    "alertDeleteError": "Bibliothek konnte nicht gelöscht werden"
   }
 }

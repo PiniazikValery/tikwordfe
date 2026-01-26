@@ -41,7 +41,8 @@
     "alertErrorBothFields": "Please enter both word and translation",
     "alertErrorNoLanguage": "Please select a language first",
     "alertErrorSave": "Failed to save word",
-    "alertErrorDelete": "Failed to delete word"
+    "alertErrorDelete": "Failed to delete word",
+    "alertErrorDuplicate": "This word already exists in your dictionary"
   },
   "training": {
     "title": "Training",
@@ -155,5 +156,40 @@
     "remaining": "{{remaining}} of {{total}} free requests left",
     "limitReached": "Limit reached",
     "unlimited": "Unlimited"
+  },
+  "libraries": {
+    "title": "Libraries",
+    "allWords": "All Words",
+    "create": "Create Library",
+    "edit": "Edit Library",
+    "delete": "Delete",
+    "deleteConfirmTitle": "Delete Library?",
+    "deleteConfirmMessage": "This will remove the library but keep all words. Words will no longer be associated with this library.",
+    "name": "Name",
+    "namePlaceholder": "Enter library name",
+    "difficulty": "Difficulty",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "color": "Color",
+    "icon": "Icon",
+    "words": "Words",
+    "searchWords": "Search words...",
+    "noWordsFound": "No words found",
+    "save": "Save",
+    "cancel": "Cancel",
+    "wordCount": "{{count}} word",
+    "wordCount_plural": "{{count}} words",
+    "emptyState": "No libraries yet. Create your first library!",
+    "selectLibraries": "Select Libraries",
+    "noLibrary": "No library",
+    "manage": "Manage Libraries",
+    "saveWithoutLibrary": "Save without library",
+    "saveToSelected": "Save to selected libraries",
+    "alertNameRequired": "Please enter a library name",
+    "alertSaveError": "Failed to save library",
+    "alertDeleteError": "Failed to delete library"
   }
 }

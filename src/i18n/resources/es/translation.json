@@ -41,7 +41,8 @@
     "alertErrorBothFields": "Por favor ingresa tanto la palabra como la traducción",
     "alertErrorNoLanguage": "Por favor selecciona un idioma primero",
     "alertErrorSave": "Error al guardar la palabra",
-    "alertErrorDelete": "Error al eliminar la palabra"
+    "alertErrorDelete": "Error al eliminar la palabra",
+    "alertErrorDuplicate": "Esta palabra ya existe en tu diccionario"
   },
   "training": {
     "title": "Entrenamiento",
@@ -155,5 +156,40 @@
     "remaining": "{{remaining}} de {{total}} solicitudes gratuitas restantes",
     "limitReached": "Límite alcanzado",
     "unlimited": "Ilimitado"
+  },
+  "libraries": {
+    "title": "Bibliotecas",
+    "allWords": "Todas las palabras",
+    "create": "Crear biblioteca",
+    "edit": "Editar biblioteca",
+    "delete": "Eliminar",
+    "deleteConfirmTitle": "¿Eliminar biblioteca?",
+    "deleteConfirmMessage": "Se eliminará la biblioteca pero se conservarán las palabras. Las palabras ya no estarán asociadas con esta biblioteca.",
+    "name": "Nombre",
+    "namePlaceholder": "Ingresa el nombre de la biblioteca",
+    "difficulty": "Dificultad",
+    "beginner": "Principiante",
+    "intermediate": "Intermedio",
+    "advanced": "Avanzado",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Descripción opcional",
+    "color": "Color",
+    "icon": "Icono",
+    "words": "Palabras",
+    "searchWords": "Buscar palabras...",
+    "noWordsFound": "No se encontraron palabras",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "wordCount": "{{count}} palabra",
+    "wordCount_plural": "{{count}} palabras",
+    "emptyState": "Aún no hay bibliotecas. ¡Crea tu primera biblioteca!",
+    "selectLibraries": "Seleccionar bibliotecas",
+    "noLibrary": "Sin biblioteca",
+    "manage": "Administrar bibliotecas",
+    "saveWithoutLibrary": "Guardar sin biblioteca",
+    "saveToSelected": "Guardar en bibliotecas seleccionadas",
+    "alertNameRequired": "Por favor ingresa un nombre de biblioteca",
+    "alertSaveError": "Error al guardar la biblioteca",
+    "alertDeleteError": "Error al eliminar la biblioteca"
   }
 }

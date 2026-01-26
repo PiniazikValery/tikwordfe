@@ -80,6 +80,88 @@ export function generateId(): string {
   return Date.now().toString() + Math.random().toString(36).substring(2, 9);
 }
 
+export async function addWordToLibrary(
+  wordId: string,
+  libraryId: string,
+  languageCode: SupportedLanguage,
+): Promise<void> {
+  try {
+    const words = await getWords(languageCode);
+    const index = words.findIndex((w) => w.id === wordId);
+    if (index !== -1) {
+      const libraryIds = words[index].libraryIds || [];
+      if (!libraryIds.includes(libraryId)) {
+        words[index].libraryIds = [...libraryIds, libraryId];
+        await AsyncStorage.setItem(
+          getWordsKey(languageCode),
+          JSON.stringify(words),
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error adding word to library:", error);
+    throw error;
+  }
+}
+
+export async function removeWordFromLibrary(
+  wordId: string,
+  libraryId: string,
+  languageCode: SupportedLanguage,
+): Promise<void> {
+  try {
+    const words = await getWords(languageCode);
+    const index = words.findIndex((w) => w.id === wordId);
+    if (index !== -1 && words[index].libraryIds) {
+      words[index].libraryIds = words[index].libraryIds!.filter(
+        (id) => id !== libraryId,
+      );
+      await AsyncStorage.setItem(
+        getWordsKey(languageCode),
+        JSON.stringify(words),
+      );
+    }
+  } catch (error) {
+    console.error("Error removing word from library:", error);
+    throw error;
+  }
+}
+
+export async function getWordsByLibrary(
+  libraryId: string,
+  languageCode: SupportedLanguage,
+): Promise<Word[]> {
+  try {
+    const words = await getWords(languageCode);
+    return words.filter(
+      (w) => w.libraryIds && w.libraryIds.includes(libraryId),
+    );
+  } catch (error) {
+    console.error("Error getting words by library:", error);
+    return [];
+  }
+}
+
+export async function removeLibraryFromAllWords(
+  libraryId: string,
+  languageCode: SupportedLanguage,
+): Promise<void> {
+  try {
+    const words = await getWords(languageCode);
+    const updatedWords = words.map((w) => ({
+      ...w,
+      libraryIds: w.libraryIds?.filter((id) => id !== libraryId),
+    }));
+    await AsyncStorage.setItem(
+      getWordsKey(languageCode),
+      JSON.stringify(updatedWords),
+    );
+  } catch (error) {
+    console.error("Error removing library from words:", error);
+    throw error;
+  }
+}
+
 // Minimum time (in ms) that must pass before correct answer increases percentage
 // This prevents "cheating" by quickly tapping correct answers
 // Real learning requires time for memory consolidation

@@ -41,7 +41,8 @@
     "alertErrorBothFields": "Пожалуйста, введите и слово, и перевод",
     "alertErrorNoLanguage": "Пожалуйста, сначала выберите язык",
     "alertErrorSave": "Не удалось сохранить слово",
-    "alertErrorDelete": "Не удалось удалить слово"
+    "alertErrorDelete": "Не удалось удалить слово",
+    "alertErrorDuplicate": "Это слово уже есть в вашем словаре"
   },
   "training": {
     "title": "Тренировка",
@@ -155,5 +156,40 @@
     "remaining": "Осталось {{remaining}} из {{total}} бесплатных запросов",
     "limitReached": "Лимит исчерпан",
     "unlimited": "Безлимитно"
+  },
+  "libraries": {
+    "title": "Библиотеки",
+    "allWords": "Все слова",
+    "create": "Создать библиотеку",
+    "edit": "Редактировать библиотеку",
+    "delete": "Удалить",
+    "deleteConfirmTitle": "Удалить библиотеку?",
+    "deleteConfirmMessage": "Библиотека будет удалена, но все слова сохранятся. Слова больше не будут связаны с этой библиотекой.",
+    "name": "Название",
+    "namePlaceholder": "Введите название библиотеки",
+    "difficulty": "Сложность",
+    "beginner": "Начинающий",
+    "intermediate": "Средний",
+    "advanced": "Продвинутый",
+    "description": "Описание",
+    "descriptionPlaceholder": "Необязательное описание",
+    "color": "Цвет",
+    "icon": "Иконка",
+    "words": "Слова",
+    "searchWords": "Поиск слов...",
+    "noWordsFound": "Слова не найдены",
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "wordCount": "{{count}} слово",
+    "wordCount_plural": "{{count}} слов",
+    "emptyState": "Пока нет библиотек. Создайте первую!",
+    "selectLibraries": "Выбрать библиотеки",
+    "noLibrary": "Без библиотеки",
+    "manage": "Управление библиотеками",
+    "saveWithoutLibrary": "Сохранить без библиотеки",
+    "saveToSelected": "Сохранить в выбранные библиотеки",
+    "alertNameRequired": "Введите название библиотеки",
+    "alertSaveError": "Не удалось сохранить библиотеку",
+    "alertDeleteError": "Не удалось удалить библиотеку"
   }
 }

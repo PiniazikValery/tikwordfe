@@ -41,7 +41,8 @@
     "alertErrorBothFields": "Veuillez saisir le mot et sa traduction",
     "alertErrorNoLanguage": "Veuillez d'abord sélectionner une langue",
     "alertErrorSave": "Échec de l'enregistrement du mot",
-    "alertErrorDelete": "Échec de la suppression du mot"
+    "alertErrorDelete": "Échec de la suppression du mot",
+    "alertErrorDuplicate": "Ce mot existe déjà dans votre dictionnaire"
   },
   "training": {
     "title": "Entraînement",
@@ -155,5 +156,40 @@
     "remaining": "{{remaining}} sur {{total}} requêtes gratuites restantes",
     "limitReached": "Limite atteinte",
     "unlimited": "Illimité"
+  },
+  "libraries": {
+    "title": "Bibliothèques",
+    "allWords": "Tous les mots",
+    "create": "Créer une bibliothèque",
+    "edit": "Modifier la bibliothèque",
+    "delete": "Supprimer",
+    "deleteConfirmTitle": "Supprimer la bibliothèque ?",
+    "deleteConfirmMessage": "La bibliothèque sera supprimée mais tous les mots seront conservés. Les mots ne seront plus associés à cette bibliothèque.",
+    "name": "Nom",
+    "namePlaceholder": "Entrez le nom de la bibliothèque",
+    "difficulty": "Difficulté",
+    "beginner": "Débutant",
+    "intermediate": "Intermédiaire",
+    "advanced": "Avancé",
+    "description": "Description",
+    "descriptionPlaceholder": "Description optionnelle",
+    "color": "Couleur",
+    "icon": "Icône",
+    "words": "Mots",
+    "searchWords": "Rechercher des mots...",
+    "noWordsFound": "Aucun mot trouvé",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "wordCount": "{{count}} mot",
+    "wordCount_plural": "{{count}} mots",
+    "emptyState": "Pas encore de bibliothèques. Créez votre première bibliothèque !",
+    "selectLibraries": "Sélectionner les bibliothèques",
+    "noLibrary": "Aucune bibliothèque",
+    "manage": "Gérer les bibliothèques",
+    "saveWithoutLibrary": "Enregistrer sans bibliothèque",
+    "saveToSelected": "Enregistrer dans les bibliothèques sélectionnées",
+    "alertNameRequired": "Veuillez entrer un nom de bibliothèque",
+    "alertSaveError": "Échec de l'enregistrement de la bibliothèque",
+    "alertDeleteError": "Échec de la suppression de la bibliothèque"
   }
 }

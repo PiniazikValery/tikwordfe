@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { LanguageProvider, useLanguage } from '@/src/contexts/LanguageContext';
+import { LibraryProvider } from '@/src/contexts/LibraryContext';
 import { PaywallProvider } from '@/src/contexts/PaywallContext';
 import { RevenueCatProvider } from '@/src/contexts/RevenueCatContext';
 import '@/src/i18n'; // Initialize i18n
@@ -58,7 +59,9 @@ export default function RootLayout() {
       <RevenueCatProvider>
         <PaywallProvider>
           <LanguageProvider>
-            <RootNavigator />
+            <LibraryProvider>
+              <RootNavigator />
+            </LibraryProvider>
           </LanguageProvider>
         </PaywallProvider>
       </RevenueCatProvider>
