@@ -2,7 +2,7 @@
   "expo": {
     "name": "TikWord",
     "slug": "tickword",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tickword",
@@ -20,7 +20,7 @@
     },
     "android": {
       "package": "com.tickword.app",
-      "versionCode": 6,
+      "versionCode": 7,
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
