@@ -6,7 +6,8 @@
       "Bash(npx expo run:android:*)",
       "Bash(taskkill:*)",
       "Bash(adb shell:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(java:*)"
     ]
   }
 }
