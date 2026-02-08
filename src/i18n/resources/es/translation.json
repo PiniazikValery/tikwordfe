@@ -191,5 +191,21 @@
     "alertNameRequired": "Por favor ingresa un nombre de biblioteca",
     "alertSaveError": "Error al guardar la biblioteca",
     "alertDeleteError": "Error al eliminar la biblioteca"
+  },
+  "sharedLibraries": {
+    "title": "Explorar Bibliotecas",
+    "searchPlaceholder": "Buscar bibliotecas...",
+    "filterAll": "Todas",
+    "empty": "Aún no hay bibliotecas compartidas disponibles.",
+    "noResults": "No se encontraron bibliotecas.",
+    "errorLoading": "Error al cargar bibliotecas. Inténtalo de nuevo.",
+    "errorDownloading": "Error al descargar la biblioteca. Inténtalo de nuevo.",
+    "downloadSuccess": "\"{{name}}\" descargada con éxito. {{imported}} palabras importadas, {{skipped}} omitidas (duplicadas).",
+    "updateSuccess": "\"{{name}}\" actualizada. {{imported}} palabras nuevas añadidas, {{skipped}} ya existían.",
+    "by": "por {{author}}",
+    "browseButton": "Explorar Bibliotecas",
+    "previewWords": "Palabras en esta biblioteca",
+    "downloadLibrary": "Descargar biblioteca",
+    "updateLibrary": "Actualizar biblioteca"
   }
 }

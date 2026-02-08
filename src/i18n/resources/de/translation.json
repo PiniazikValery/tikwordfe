@@ -191,5 +191,21 @@
     "alertNameRequired": "Bitte gib einen Bibliotheksnamen ein",
     "alertSaveError": "Bibliothek konnte nicht gespeichert werden",
     "alertDeleteError": "Bibliothek konnte nicht gelöscht werden"
+  },
+  "sharedLibraries": {
+    "title": "Bibliotheken durchsuchen",
+    "searchPlaceholder": "Bibliotheken suchen...",
+    "filterAll": "Alle",
+    "empty": "Noch keine geteilten Bibliotheken verfügbar.",
+    "noResults": "Keine Bibliotheken gefunden.",
+    "errorLoading": "Bibliotheken konnten nicht geladen werden. Bitte versuche es erneut.",
+    "errorDownloading": "Bibliothek konnte nicht heruntergeladen werden. Bitte versuche es erneut.",
+    "downloadSuccess": "\"{{name}}\" erfolgreich heruntergeladen! {{imported}} Wörter importiert, {{skipped}} übersprungen (Duplikate).",
+    "updateSuccess": "\"{{name}}\" aktualisiert! {{imported}} neue Wörter hinzugefügt, {{skipped}} existierten bereits.",
+    "by": "von {{author}}",
+    "browseButton": "Bibliotheken durchsuchen",
+    "previewWords": "Wörter in dieser Bibliothek",
+    "downloadLibrary": "Bibliothek herunterladen",
+    "updateLibrary": "Bibliothek aktualisieren"
   }
 }

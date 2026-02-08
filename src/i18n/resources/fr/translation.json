@@ -191,5 +191,21 @@
     "alertNameRequired": "Veuillez entrer un nom de bibliothèque",
     "alertSaveError": "Échec de l'enregistrement de la bibliothèque",
     "alertDeleteError": "Échec de la suppression de la bibliothèque"
+  },
+  "sharedLibraries": {
+    "title": "Parcourir les Bibliothèques",
+    "searchPlaceholder": "Rechercher des bibliothèques...",
+    "filterAll": "Toutes",
+    "empty": "Aucune bibliothèque partagée disponible pour le moment.",
+    "noResults": "Aucune bibliothèque trouvée.",
+    "errorLoading": "Échec du chargement des bibliothèques. Veuillez réessayer.",
+    "errorDownloading": "Échec du téléchargement de la bibliothèque. Veuillez réessayer.",
+    "downloadSuccess": "\"{{name}}\" téléchargée avec succès ! {{imported}} mots importés, {{skipped}} ignorés (doublons).",
+    "updateSuccess": "\"{{name}}\" mise à jour ! {{imported}} nouveaux mots ajoutés, {{skipped}} existaient déjà.",
+    "by": "par {{author}}",
+    "browseButton": "Parcourir les Bibliothèques",
+    "previewWords": "Mots dans cette bibliothèque",
+    "downloadLibrary": "Télécharger la bibliothèque",
+    "updateLibrary": "Mettre à jour la bibliothèque"
   }
 }

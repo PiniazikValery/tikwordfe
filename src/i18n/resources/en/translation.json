@@ -191,5 +191,21 @@
     "alertNameRequired": "Please enter a library name",
     "alertSaveError": "Failed to save library",
     "alertDeleteError": "Failed to delete library"
+  },
+  "sharedLibraries": {
+    "title": "Browse Libraries",
+    "searchPlaceholder": "Search libraries...",
+    "filterAll": "All",
+    "empty": "No shared libraries available yet.",
+    "noResults": "No libraries found matching your search.",
+    "errorLoading": "Failed to load libraries. Please try again.",
+    "errorDownloading": "Failed to download library. Please try again.",
+    "downloadSuccess": "\"{{name}}\" downloaded successfully! {{imported}} words imported, {{skipped}} skipped (duplicates).",
+    "updateSuccess": "\"{{name}}\" updated! {{imported}} new words added, {{skipped}} already existed.",
+    "by": "by {{author}}",
+    "browseButton": "Browse Libraries",
+    "previewWords": "Words in this library",
+    "downloadLibrary": "Download Library",
+    "updateLibrary": "Update Library"
   }
 }

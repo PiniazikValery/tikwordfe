@@ -191,5 +191,21 @@
     "alertNameRequired": "Введите название библиотеки",
     "alertSaveError": "Не удалось сохранить библиотеку",
     "alertDeleteError": "Не удалось удалить библиотеку"
+  },
+  "sharedLibraries": {
+    "title": "Обзор библиотек",
+    "searchPlaceholder": "Поиск библиотек...",
+    "filterAll": "Все",
+    "empty": "Пока нет доступных библиотек.",
+    "noResults": "Библиотеки не найдены.",
+    "errorLoading": "Не удалось загрузить библиотеки. Попробуйте снова.",
+    "errorDownloading": "Не удалось скачать библиотеку. Попробуйте снова.",
+    "downloadSuccess": "\"{{name}}\" успешно загружена! {{imported}} слов импортировано, {{skipped}} пропущено (дубликаты).",
+    "updateSuccess": "\"{{name}}\" обновлена! {{imported}} новых слов добавлено, {{skipped}} уже существовали.",
+    "by": "от {{author}}",
+    "browseButton": "Обзор библиотек",
+    "previewWords": "Слова в этой библиотеке",
+    "downloadLibrary": "Скачать библиотеку",
+    "updateLibrary": "Обновить библиотеку"
   }
 }

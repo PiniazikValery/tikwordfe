@@ -191,5 +191,21 @@
     "alertNameRequired": "请输入词库名称",
     "alertSaveError": "保存词库失败",
     "alertDeleteError": "删除词库失败"
+  },
+  "sharedLibraries": {
+    "title": "浏览词库",
+    "searchPlaceholder": "搜索词库...",
+    "filterAll": "全部",
+    "empty": "暂无可用的共享词库。",
+    "noResults": "未找到词库。",
+    "errorLoading": "加载词库失败，请重试。",
+    "errorDownloading": "下载词库失败，请重试。",
+    "downloadSuccess": "\"{{name}}\" 下载成功！导入 {{imported}} 个单词，跳过 {{skipped}} 个（重复）。",
+    "updateSuccess": "\"{{name}}\" 已更新！添加 {{imported}} 个新单词，{{skipped}} 个已存在。",
+    "by": "作者：{{author}}",
+    "browseButton": "浏览词库",
+    "previewWords": "此词库中的单词",
+    "downloadLibrary": "下载词库",
+    "updateLibrary": "更新词库"
   }
 }

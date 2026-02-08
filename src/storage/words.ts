@@ -162,6 +162,88 @@ export async function removeLibraryFromAllWords(
   }
 }
 
+/**
+ * Import multiple words from a shared library
+ * For new words: creates them and adds to the library
+ * For existing words: adds them to the library (if not already in it)
+ * Returns the count of imported (new) and linked (existing) words
+ */
+export async function importSharedWords(
+  sharedWords: Array<{
+    word: string;
+    translation: string;
+    transcription?: string;
+  }>,
+  libraryId: string,
+  languageCode: SupportedLanguage
+): Promise<{ imported: number; skipped: number }> {
+  const existingWords = await getWords(languageCode);
+
+  // Create a map for quick lookup of existing words
+  const existingWordMap = new Map<string, Word>();
+  for (const word of existingWords) {
+    existingWordMap.set(word.word.toLowerCase(), word);
+  }
+
+  let imported = 0;
+  let skipped = 0;
+
+  const wordsToAdd: Word[] = [];
+  const wordsToUpdate: Word[] = [];
+
+  for (const sharedWord of sharedWords) {
+    const wordKey = sharedWord.word.toLowerCase();
+    const existingWord = existingWordMap.get(wordKey);
+
+    if (existingWord) {
+      // Word already exists - add library to it if not already present
+      const currentLibraryIds = existingWord.libraryIds || [];
+      if (!currentLibraryIds.includes(libraryId)) {
+        wordsToUpdate.push({
+          ...existingWord,
+          libraryIds: [...currentLibraryIds, libraryId],
+        });
+      }
+      skipped++;
+    } else {
+      // New word - create it
+      const newWord: Word = {
+        id: generateId(),
+        word: sharedWord.word,
+        translation: sharedWord.translation,
+        transcription: sharedWord.transcription,
+        rememberPercent: 0,
+        correctCount: 0,
+        incorrectCount: 0,
+        libraryIds: [libraryId],
+      };
+
+      wordsToAdd.push(newWord);
+      existingWordMap.set(wordKey, newWord);
+      imported++;
+    }
+  }
+
+  // Apply updates if there are any changes
+  if (wordsToAdd.length > 0 || wordsToUpdate.length > 0) {
+    // Merge updates into existing words
+    let allWords = existingWords.map((w) => {
+      const updated = wordsToUpdate.find((u) => u.id === w.id);
+      return updated || w;
+    });
+
+    // Add new words
+    allWords = [...allWords, ...wordsToAdd];
+
+    await AsyncStorage.setItem(
+      getWordsKey(languageCode),
+      JSON.stringify(allWords)
+    );
+  }
+
+  return { imported, skipped };
+}
+
 // Minimum time (in ms) that must pass before correct answer increases percentage
 // This prevents "cheating" by quickly tapping correct answers
 // Real learning requires time for memory consolidation

@@ -79,3 +79,49 @@ export async function deleteLibrary(
 export function generateLibraryId(): string {
   return "lib_" + Date.now().toString() + Math.random().toString(36).substring(2, 9);
 }
+
+/**
+ * Find a library by its source shared library ID
+ */
+export async function findLibraryBySourceId(
+  sourceSharedLibraryId: string,
+  languageCode: SupportedLanguage
+): Promise<Library | undefined> {
+  const libraries = await getLibraries(languageCode);
+  return libraries.find(
+    (lib) =>
+      lib.sourceSharedLibraryId === sourceSharedLibraryId ||
+      lib.sharedLibraryId === sourceSharedLibraryId
+  );
+}
+
+/**
+ * Import a shared library from the backend into local storage
+ * Returns the new local library ID
+ */
+export async function importSharedLibrary(
+  sharedLibrary: {
+    id: string; // Backend UUID
+    name: string;
+    difficulty: "beginner" | "intermediate" | "advanced";
+    description?: string;
+    color?: string;
+    icon?: string;
+  },
+  languageCode: SupportedLanguage
+): Promise<string> {
+  const newLibrary: Library = {
+    id: generateLibraryId(),
+    name: sharedLibrary.name,
+    difficulty: sharedLibrary.difficulty,
+    description: sharedLibrary.description,
+    color: sharedLibrary.color,
+    icon: sharedLibrary.icon,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+    sourceSharedLibraryId: sharedLibrary.id, // Track the source
+  };
+
+  await saveLibrary(newLibrary, languageCode);
+  return newLibrary.id;
+}

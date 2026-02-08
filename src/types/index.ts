@@ -22,6 +22,8 @@ export interface Library {
   icon?: string; // Ionicons name, e.g., "book"
   createdAt: number;
   updatedAt: number;
+  sharedLibraryId?: string; // Backend UUID if this library was shared (creator)
+  sourceSharedLibraryId?: string; // Backend UUID if this library was downloaded from shared
 }
 
 export interface Subtitle {

@@ -11,12 +11,14 @@ import {
     View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { shareLibrary, updateSharedLibrary } from "../api/sharedLibraries";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useLibrary } from "../contexts/LibraryContext";
 import { updateWord } from "../storage/words";
 import { Library, Word } from "../types";
 import DifficultyBadge from "./DifficultyBadge";
 import LibraryFormModal from "./LibraryFormModal";
+import SharedLibrariesModal from "./SharedLibrariesModal";
 
 interface LibraryManagementModalProps {
   visible: boolean;
@@ -37,6 +39,7 @@ export default function LibraryManagementModal({
   const { languageConfig } = useLanguage();
   const { libraries, createLibrary, editLibrary, deleteLibrary } = useLibrary();
   const [showFormModal, setShowFormModal] = useState(false);
+  const [showSharedLibraries, setShowSharedLibraries] = useState(false);
   const [editingLibrary, setEditingLibrary] = useState<Library | undefined>();
 
   const handleCreate = () => {
@@ -75,12 +78,13 @@ export default function LibraryManagementModal({
     selectedWordIds?: string[],
   ) => {
     let libraryId: string;
+    let newLibrary: Library | null = null;
 
     if (editingLibrary) {
       await editLibrary({ ...editingLibrary, ...data });
       libraryId = editingLibrary.id;
     } else {
-      const newLibrary = await createLibrary(data);
+      newLibrary = await createLibrary(data);
       if (!newLibrary) return;
       libraryId = newLibrary.id;
     }
@@ -113,6 +117,82 @@ export default function LibraryManagementModal({
         }
       }
       onWordsUpdated?.();
+
+      // Auto-share: Upload new library to backend if it has words
+      if (newLibrary && selectedWordIds.length > 0 && languageConfig) {
+        const selectedWords = words.filter((w) => selectedWordIds.includes(w.id));
+        autoShareLibrary(newLibrary, selectedWords, languageConfig.code);
+      }
+
+      // Sync updates: If editing an already shared library, update it on backend
+      if (editingLibrary?.sharedLibraryId && languageConfig) {
+        const selectedWords = words.filter((w) => selectedWordIds.includes(w.id));
+        syncSharedLibrary(
+          editingLibrary.sharedLibraryId,
+          { ...editingLibrary, ...data },
+          selectedWords,
+        );
+      }
+    }
+  };
+
+  const autoShareLibrary = async (
+    library: Library,
+    libraryWords: Word[],
+    targetLanguage: string,
+  ) => {
+    try {
+      const result = await shareLibrary({
+        name: library.name,
+        description: library.description,
+        difficulty: library.difficulty,
+        color: library.color,
+        icon: library.icon,
+        sourceLanguage: "en",
+        targetLanguage: targetLanguage,
+        words: libraryWords.map((w) => ({
+          word: w.word,
+          translation: w.translation,
+          transcription: w.transcription,
+        })),
+      });
+
+      // Update local library with shared ID
+      await editLibrary({
+        ...library,
+        sharedLibraryId: result.id,
+      });
+
+      console.log(`Library "${library.name}" auto-shared with ID: ${result.id}`);
+    } catch (error) {
+      // Silent fail - auto-share is optional, local save already succeeded
+      console.warn("Auto-share failed (library saved locally):", error);
+    }
+  };
+
+  const syncSharedLibrary = async (
+    sharedLibraryId: string,
+    library: Library,
+    libraryWords: Word[],
+  ) => {
+    try {
+      await updateSharedLibrary(sharedLibraryId, {
+        name: library.name,
+        description: library.description,
+        difficulty: library.difficulty,
+        color: library.color,
+        icon: library.icon,
+        words: libraryWords.map((w) => ({
+          word: w.word,
+          translation: w.translation,
+          transcription: w.transcription,
+        })),
+      });
+
+      console.log(`Library "${library.name}" synced to backend`);
+    } catch (error) {
+      // Silent fail - sync is optional, local save already succeeded
+      console.warn("Sync to backend failed (local changes saved):", error);
     }
   };
 
@@ -139,6 +219,9 @@ export default function LibraryManagementModal({
             <Text style={styles.wordCount}>
               {t("libraries.wordCount", { count: wordCounts[item.id] || 0 })}
             </Text>
+            {item.sharedLibraryId && (
+              <Ionicons name="cloud-done" size={14} color="#34C759" />
+            )}
           </View>
           {item.description && (
             <Text style={styles.libraryDescription} numberOfLines={1}>
@@ -189,6 +272,16 @@ export default function LibraryManagementModal({
           </TouchableOpacity>
         </View>
 
+        <TouchableOpacity
+          style={styles.browseButton}
+          onPress={() => setShowSharedLibraries(true)}
+        >
+          <Ionicons name="cloud-download-outline" size={20} color="#007AFF" />
+          <Text style={styles.browseButtonText}>
+            {t("sharedLibraries.browseButton")}
+          </Text>
+        </TouchableOpacity>
+
         <FlatList
           data={libraries}
           keyExtractor={(item) => item.id}
@@ -205,6 +298,12 @@ export default function LibraryManagementModal({
           words={words}
           onSave={handleSave}
           onClose={() => setShowFormModal(false)}
+        />
+
+        <SharedLibrariesModal
+          visible={showSharedLibraries}
+          onClose={() => setShowSharedLibraries(false)}
+          onLibraryImported={onWordsUpdated}
         />
       </SafeAreaView>
     </Modal>
@@ -232,6 +331,26 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "600",
     color: "#000",
+  },
+  browseButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    marginHorizontal: 16,
+    marginTop: 12,
+    backgroundColor: "#f0f8ff",
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#007AFF",
+    borderStyle: "dashed",
+    gap: 8,
+  },
+  browseButtonText: {
+    fontSize: 15,
+    fontWeight: "500",
+    color: "#007AFF",
   },
   list: {
     padding: 16,

@@ -1,5 +1,5 @@
 // App configuration that changes based on environment
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 
 // Get config from expo extra (set in app.config.js from env variables)
 const expoExtra = Constants.expoConfig?.extra || {};
@@ -25,7 +25,8 @@ const getRevenueCatApiKey = (): string => {
 export const Config = {
   // API Configuration
   api: {
-    baseUrl: 'http://tikwordbe.duckdns.org:3000',
+    baseUrl: "http://tikwordbe.duckdns.org:3000",
+    // baseUrl: "http://10.0.2.2:3000", // For Dev testing with Android emulator (localhost)
   },
 
   // RevenueCat API Keys
