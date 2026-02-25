@@ -15,6 +15,13 @@ export interface WordExample {
   captions: Caption[];
   videoUrl: string;
   startTime: number;
+  popularity?: {
+    score: number;
+    viewCount: number;
+    likeCount: number;
+    commentCount: number;
+    calculatedAt: string;
+  };
 }
 
 /**
@@ -60,7 +67,17 @@ export async function getRandomWordExample(word: string): Promise<WordExample | 
     return null;
   }
 
-  // Pick a random example
-  const randomIndex = Math.floor(Math.random() * examples.length);
-  return examples[randomIndex];
+  // Weighted random selection: popular videos appear more frequently
+  const weights = examples.map(e => e.popularity?.score ?? 1);
+  const totalWeight = weights.reduce((sum, w) => sum + w, 0);
+  let random = Math.random() * totalWeight;
+
+  for (let i = 0; i < examples.length; i++) {
+    random -= weights[i];
+    if (random <= 0) {
+      return examples[i];
+    }
+  }
+
+  return examples[examples.length - 1];
 }

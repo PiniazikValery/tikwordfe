@@ -45,7 +45,6 @@ export default function TrainingScreen() {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [loadingVideo, setLoadingVideo] = useState(false);
   const [videoData, setVideoData] = useState<VideoData | null>(null);
-  const [videoError, setVideoError] = useState<string | null>(null);
   const [searchStatus, setSearchStatus] = useState<SearchStatus>("queued");
   const [statusMessage, setStatusMessage] = useState<string>("");
   const [currentVideoId, setCurrentVideoId] = useState<string | undefined>();
@@ -248,7 +247,6 @@ export default function TrainingScreen() {
 
     setShowVideoModal(true);
     setLoadingVideo(true);
-    setVideoError(null);
     setVideoData(null);
     setSearchStatus("queued");
     setStatusMessage(t("training.loadingLookingForExamples"));
@@ -307,21 +305,34 @@ export default function TrainingScreen() {
       };
 
       setVideoData(videoData);
+      setLoadingVideo(false);
     } catch (error) {
-      // Don't show error if the search was cancelled
+      // Don't retry if the search was cancelled by user
       if (error instanceof Error && error.message === "Search cancelled") {
         console.log("Search was cancelled by user");
         return;
       }
 
-      console.error("Error loading video context:", error);
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : "Failed to load video context. Please try again.";
-      setVideoError(errorMessage);
-    } finally {
-      setLoadingVideo(false);
+      // Don't retry if aborted
+      if (abortController.signal.aborted) {
+        return;
+      }
+
+      console.error("Error loading video context, retrying:", error);
+
+      // Reset status and retry automatically
+      setSearchStatus("queued");
+      setStatusMessage(t("training.loadingLookingForExamples"));
+      setCurrentVideoId(undefined);
+
+      // Small delay before retrying to avoid hammering the API
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Only retry if not aborted during the delay
+      if (!abortController.signal.aborted) {
+        handleSeeInConversation();
+      }
+      return;
     }
   }
 
@@ -334,16 +345,12 @@ export default function TrainingScreen() {
 
     setShowVideoModal(false);
     setVideoData(null);
-    setVideoError(null);
     setLoadingVideo(false);
     setSearchStatus("queued");
     setStatusMessage("");
     setCurrentVideoId(undefined);
   }
 
-  function handleRetryVideo() {
-    handleSeeInConversation();
-  }
 
   if (words.length < MIN_WORDS_FOR_TRAINING) {
     return (
@@ -622,21 +629,6 @@ export default function TrainingScreen() {
                 <Text style={styles.infoIcon}>ℹ️</Text>
                 <Text style={styles.infoText}>{t("training.loadingInfo")}</Text>
               </View>
-            </View>
-          ) : videoError ? (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorIcon}>{t("training.errorIcon")}</Text>
-              <Text style={styles.errorTitle}>{t("training.errorOops")}</Text>
-              <Text style={styles.errorText}>{videoError}</Text>
-
-              <TouchableOpacity
-                style={styles.retryButton}
-                onPress={handleRetryVideo}
-              >
-                <Text style={styles.retryButtonText}>
-                  {t("training.retry")}
-                </Text>
-              </TouchableOpacity>
             </View>
           ) : (
             <VideoContextScreen
@@ -954,39 +946,5 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: "#1976d2",
     lineHeight: 19,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 24,
-  },
-  errorIcon: {
-    fontSize: 48,
-    marginBottom: 16,
-  },
-  errorTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#000",
-    marginBottom: 12,
-  },
-  errorText: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 32,
-    lineHeight: 24,
-  },
-  retryButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 8,
-  },
-  retryButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
 });
