@@ -2,7 +2,7 @@
   "expo": {
     "name": "TikWord",
     "slug": "tickword",
-    "version": "1.0.10",
+    "version": "1.0.13",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "tickword",
@@ -20,12 +20,11 @@
     },
     "android": {
       "package": "com.tickword.app",
-      "versionCode": 11,
+      "versionCode": 13,
       "usesCleartextTraffic": true,
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#1AABF0",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "permissions": ["INTERNET"],
