@@ -10,6 +10,8 @@ import { LanguageProvider, useLanguage } from '@/src/contexts/LanguageContext';
 import { LibraryProvider } from '@/src/contexts/LibraryContext';
 import { PaywallProvider } from '@/src/contexts/PaywallContext';
 import { RevenueCatProvider } from '@/src/contexts/RevenueCatContext';
+import { useForceUpdate } from '@/src/hooks/useForceUpdate';
+import { ForceUpdateModal } from '@/components/ForceUpdateModal';
 import '@/src/i18n'; // Initialize i18n
 
 export const unstable_settings = {
@@ -21,6 +23,7 @@ function RootNavigator() {
   const { isLoading, isFirstTimeSetup, selectedLanguage } = useLanguage();
   const router = useRouter();
   const hasNavigated = useRef(false);
+  const { updateRequired } = useForceUpdate();
 
   useEffect(() => {
     // Only navigate once when the app first loads
@@ -49,6 +52,7 @@ function RootNavigator() {
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
+      <ForceUpdateModal visible={updateRequired} />
     </ThemeProvider>
   );
 }
